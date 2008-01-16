@@ -3,7 +3,7 @@ use inc::Module::Install;
 name 'App-TemplateServer-Provider-TD';
 all_from 'lib/App/TemplateServer/Provider/TD.pm';
 
-requires 'App::TemplateServer' => '0.01';
+requires 'App::TemplateServer' => '0.02';
 requires 'Class::MOP';
 requires 'Method::Signatures';
 requires 'Module::Pluggable::Object';
