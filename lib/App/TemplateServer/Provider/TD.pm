@@ -2,24 +2,30 @@ package App::TemplateServer::Provider::TD;
 use Moose;
 use Method::Signatures;
 use Template::Declare;
+use Class::MOP;
 require Module::Pluggable::Object;
 
 with 'App::TemplateServer::Provider';
 
 method BUILD {
-    my $template_root = $self->docroot. q{}; # not a path; evil.
-    my $mpo = Module::Pluggable::Object->new(
-        require     => 0,
-        search_path => $template_root,
-    );    
-    my @extras = $mpo->plugins;
-    foreach my $extra (@extras) {
-        # load module
-        if (!eval "require $extra"){
-            die "Couldn't include $extra: $@";
+    my @roots = $self->docroot;
+    my @more;
+    
+    for my $template_root (@roots){
+        # first class not always loadable; it depends
+        eval { Class::MOP::load_class($template_root) };
+        my $mpo = Module::Pluggable::Object->new(
+            require     => 0,
+            search_path => $template_root,
+        );    
+        my @extras = $mpo->plugins;
+        foreach my $extra (@extras) {
+            # load module
+            Class::MOP::load_class($extra);
         }
+        push @more, @extras;
     }
-    Template::Declare->init(roots => [$template_root, @extras]);
+    Template::Declare->init(roots => [@roots, @more]);
 };
 
 method list_templates {
