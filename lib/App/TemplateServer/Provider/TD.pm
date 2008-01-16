@@ -5,6 +5,8 @@ use Template::Declare;
 use Class::MOP;
 require Module::Pluggable::Object;
 
+our $VERSION = '0.01';
+
 with 'App::TemplateServer::Provider';
 
 method BUILD {
