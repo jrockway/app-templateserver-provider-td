@@ -42,7 +42,10 @@ method list_templates {
 method render_template($template,$context) {
     
     Template::Declare->new_buffer_frame;
-    my $out = Template::Declare->show($template) || "Rendering failed";
+    my $out = Template::Declare->show($template) || 
+              Template::Declare->show(Template::Declare->path_for($template)) || 
+              "Rendering failed";
+                                      
     Template::Declare->end_buffer_frame;
     
     $out =~ s/^\n+//g; # kill leading newlines
